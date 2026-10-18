@@ -8,8 +8,8 @@ classifier = pipeline(
 
 # %%
 sample_texts = [
-    "Isa kang <mask>",
-    "Ayoko <mask>"
+    "Ayoko <mask>, ang pangit kasi ng teacher",
+    "Si Maverick ay <mask> dahil binubully siya ni Emman"
 ]
 
 results = classifier(
