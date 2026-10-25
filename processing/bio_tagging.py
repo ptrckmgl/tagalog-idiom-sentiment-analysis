@@ -22,8 +22,8 @@ import os
 import re
 import sys
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_DIRS = ["culturax_idioms", "news_ph_idioms"]
+SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_DIRS = [os.path.join("data", "culturax_idioms"), os.path.join("data", "news_ph_idioms")]
 
 # A word (keeping inner hyphens/apostrophes, e.g. "abo-aboy", "puno't") or a
 # single punctuation mark.

@@ -3,7 +3,7 @@
 Context file for Claude when planning next steps. Snapshot as of 2026-10-20. Verify against the code before relying on details.
 
 ## Goal
-Build a dataset of Filipino/Tagalog sentences containing idioms, to later train an NLP model. The exact training task is **not decided yet** (candidates: sentence-level "contains an idiom" classification, or token-level tagging). BIO tagging was written but is on hold. The only model touched so far is `jcblaise/roberta-tagalog-base` (a fill-mask demo in `tests/roberta_test.py`).
+Build a dataset of Filipino/Tagalog sentences containing idioms, to later train an NLP model. The exact training task is **not decided yet** (candidates: sentence-level "contains an idiom" classification, or token-level tagging). BIO tagging was written but is on hold. The only model touched so far is `jcblaise/roberta-tagalog-base` (a fill-mask demo in `experiments/roberta_test.py`).
 
 The user is learning NLP and has been asking conceptual questions (seeds, batch size, shuffling, epochs). Explain briefly and concretely. The user prefers scikit-learn and said to install it rather than avoid it.
 

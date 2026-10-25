@@ -6,10 +6,10 @@ duplicates when they have the same idioms AND the same text, within one
 file or across files.
 
 Usage:
-    python check_duplicates.py
-    python check_duplicates.py culturax_idioms news_ph_idioms
-    python check_duplicates.py --remove     # rewrite files without exact duplicates
-    python check_duplicates.py --merge      # one row per sentence -> merged_idioms/merged.csv
+    python processing/check_duplicates.py
+    python processing/check_duplicates.py data/culturax_idioms data/news_ph_idioms
+    python processing/check_duplicates.py --remove     # rewrite files without exact duplicates
+    python processing/check_duplicates.py --merge      # one row per sentence -> data/merged_idioms/merged.csv
 """
 
 import argparse
@@ -19,9 +19,9 @@ import sys
 
 import pandas as pd
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_DIRS = ["culturax_idioms", "news_ph_idioms"]
-MERGED_PATH = os.path.join(SCRIPT_DIR, "merged_idioms", "merged.csv")
+SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_DIRS = [os.path.join("data", "culturax_idioms"), os.path.join("data", "news_ph_idioms")]
+MERGED_PATH = os.path.join(SCRIPT_DIR, "data", "merged_idioms", "merged.csv")
 
 
 def load_dir(directory):
@@ -117,7 +117,7 @@ def main():
                         help="rewrite the CSVs without exact duplicates within each file")
     parser.add_argument("--merge", action="store_true",
                         help="merge all rows into one row per sentence (idioms combined) "
-                             "and save to merged_idioms/merged.csv")
+                             "and save to data/merged_idioms/merged.csv")
     args = parser.parse_args()
 
     for directory in args.dirs:
