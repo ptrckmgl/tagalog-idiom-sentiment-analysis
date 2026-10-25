@@ -8,12 +8,12 @@ How it works:
        is only read once for all letters.
     3. Split each row into sentences and keep only the sentences with a
        whole-word match (so "apa" is not found inside "mapayapa").
-    4. Save one results file per idiom CSV, e.g. idioms_list/a_idioms.csv
-       -> extracted_idioms/a_extracted_idioms.csv
+    4. Save one results file per idiom CSV, e.g. data/idioms_list/a_idioms.csv
+       -> data/culturax_idioms/a_culturax_idioms.csv
 
 Usage (all arguments are optional; defaults are in the SETTINGS section):
     python extractors/culturax_extraction.py
-    python extractors/culturax_extraction.py --idioms idioms_list/a_idioms.csv
+    python extractors/culturax_extraction.py --idioms data/idioms_list/a_idioms.csv
     python extractors/culturax_extraction.py --output-dir results --name "{name}_matches.json"
     python extractors/culturax_extraction.py --no-stream      # use the local NewsPH copy
 """
@@ -35,8 +35,8 @@ from datasets import load_dataset
 
 SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-IDIOMS_PATH = os.path.join(SCRIPT_DIR, "idioms_list")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "culturax_idioms")
+IDIOMS_PATH = os.path.join(SCRIPT_DIR, "data", "idioms_list")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "data", "culturax_idioms")
 OUTPUT_NAME = "{name}_culturax_idioms.csv"
 
 # Local copy of the NewsPH dataset (used only when not streaming).

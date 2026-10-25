@@ -1,0 +1,7 @@
+pandas
+scikit-learn
+datasets
+pyahocorasick
+transformers
+beautifulsoup4
+requests

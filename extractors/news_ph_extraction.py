@@ -9,12 +9,12 @@ How it works:
        so the dataset is only read once for all letters.
     3. Scan every row of NewsPH, keeping only matches that are whole words
        (so "apa" is not found inside "mapayapa").
-    4. Save one results file per idiom CSV, e.g. idioms_list/a_idioms.csv
-       -> extracted_idioms/a_extracted_idioms.csv
+    4. Save one results file per idiom CSV, e.g. data/idioms_list/a_idioms.csv
+       -> data/news_ph_idioms/a_news_ph_idioms.csv
 
 Usage (all arguments are optional; defaults are in the SETTINGS section):
     python extractors/news_ph_extraction.py
-    python extractors/news_ph_extraction.py --idioms idioms_list/a_idioms.csv
+    python extractors/news_ph_extraction.py --idioms data/idioms_list/a_idioms.csv
     python extractors/news_ph_extraction.py --output-dir results --name "{name}_matches.json"
 """
 
@@ -39,10 +39,10 @@ SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Idioms to search for: a folder (every .csv inside it is used) or a
 # single CSV file. Each CSV needs a "Title" column with one idiom per row.
-IDIOMS_PATH = os.path.join(SCRIPT_DIR, "idioms_list")
+IDIOMS_PATH = os.path.join(SCRIPT_DIR, "data", "idioms_list")
 
 # Folder the results are saved in. It is created if it does not exist.
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "news_ph_idioms")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "data", "news_ph_idioms")
 
 # Name of each results file. "{name}" is replaced by the idiom file's
 # name without "_idioms.csv", so "a_idioms.csv" gives "a". The extension

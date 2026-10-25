@@ -1,12 +1,12 @@
 """
 Split the merged idiom sentences into train, validation and test files.
 
-Reads merged_idioms/merged.csv (made by `python check_duplicates.py --merge`),
+Reads data/merged_idioms/merged.csv (made by `python processing/check_duplicates.py --merge`),
 where every sentence appears once, so no sentence can land in two splits.
 
 Usage:
-    python split_dataset.py
-    python split_dataset.py --val 0.1 --test 0.1 --seed 67
+    python processing/split_dataset.py
+    python processing/split_dataset.py --val 0.1 --test 0.1 --seed 67
 
 Output:
     dataset/train.csv
@@ -20,9 +20,9 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_PATH = os.path.join(SCRIPT_DIR, "merged_idioms", "merged.csv")
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "dataset")
+SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+INPUT_PATH = os.path.join(SCRIPT_DIR, "data", "merged_idioms", "merged.csv")
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "data", "dataset")
 
 
 def split(df, val_fraction, test_fraction, seed):
@@ -53,7 +53,7 @@ def main():
         parser.error("--val and --test must be above 0 and add up to less than 1")
 
     if not os.path.exists(args.input):
-        parser.error(f"{args.input} not found. Run: python check_duplicates.py --merge")
+        parser.error(f"{args.input} not found. Run: python processing/check_duplicates.py --merge")
 
     df = pd.read_csv(args.input, encoding="utf-8-sig", dtype=str).fillna("")
     train, val, test = split(df, args.val, args.test, args.seed)
