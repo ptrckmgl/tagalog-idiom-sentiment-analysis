@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 
 SITEMAP_URL = "https://www.leksyon.com/sitemap.xml"
-OUT_DIR = "idioms_list"
+OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "idioms_list")
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
