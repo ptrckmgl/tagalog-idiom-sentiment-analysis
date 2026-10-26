@@ -13,11 +13,7 @@ classifier = pipeline(
 # Example sentences written by Claude; they need native-speaker review.
 # The last two use idioms (the model card says idioms are a weak spot).
 sample_texts = [
-    "Ang ganda ng serbisyo, sobrang saya ko!",
-    "Ang pangit ng pagkain, hindi na ako babalik.",
-    "Pumunta ako sa palengke kanina.",
-    "Nagsunog siya ng kilay para makapasa sa board exam.",
-    "Balat-sibuyas ang kapatid ko, madaling umiyak.",
+"Agaw-buhay na dinala sa ospital ang lalaki matapos ang aksidente."
 ]
 
 results = classifier(sample_texts)

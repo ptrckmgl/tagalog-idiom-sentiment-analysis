@@ -1,7 +1,9 @@
-pandas
-scikit-learn
-datasets
-pyahocorasick
-transformers
-beautifulsoup4
-requests
+pandas==3.0.6
+scikit-learn==1.9.1
+datasets==5.1.0
+transformers==5.20.2
+torch==2.14.1
+beautifulsoup4==4.15.0
+requests==2.34.2
+tglstemmer==0.1.1
+pyahocorasick==2.3.1
