@@ -3,21 +3,29 @@ import os
 import re
 import time
 import unicodedata
-from collections import defaultdict
 from urllib.parse import unquote
 
 import requests
 from bs4 import BeautifulSoup
 
 SITEMAP_URL = "https://www.leksyon.com/sitemap.xml"
-OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "idioms_list")
+OUT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "data", "leksyon_idioms", "leksyon_idioms.csv")
 HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+# Title is written without accents (that is the form the matcher needs);
+# the title as shown on leksyon.com is kept in Accented_Title.
+COLUMNS = ["Title", "Part of Speech", "Meaning", "Accented_Title"]
+
+
+def strip_accents(text):
+    text = unicodedata.normalize("NFD", text)
+    return "".join(c for c in text if not unicodedata.combining(c))
 
 
 def fold(text):
-    """Lowercase and strip accents so sorting/letter-grouping ignores diacritics."""
-    text = unicodedata.normalize("NFD", text.casefold())
-    return "".join(c for c in text if not unicodedata.combining(c))
+    """Lowercase and strip accents so sorting ignores diacritics."""
+    return strip_accents(text.casefold())
 
 
 def get_urls():
@@ -46,23 +54,28 @@ def parse_page(html, url):
 
 
 def load_existing():
+    """Return {folded title: [accented title, pos, meaning]} from OUT_PATH."""
     rows = {}
-    if not os.path.isdir(OUT_DIR):
+    if not os.path.exists(OUT_PATH):
         return rows
-    for name in os.listdir(OUT_DIR):
-        if not name.endswith("_idioms.csv"):
-            continue
-        with open(os.path.join(OUT_DIR, name), newline="", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            next(reader, None)
-            for row in reader:
-                if row:
-                    rows[fold(row[0]).strip()] = row
+    with open(OUT_PATH, newline="", encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            title = row.get("Accented_Title") or row["Title"]
+            rows[fold(title).strip()] = [title, row["Part of Speech"], row["Meaning"]]
     return rows
 
 
+def save_rows(rows):
+    """Write [accented title, pos, meaning] rows to OUT_PATH, sorted ignoring accents."""
+    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
+    with open(OUT_PATH, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.writer(f)
+        writer.writerow(COLUMNS)
+        for title, pos, mean in sorted(rows, key=lambda r: fold(r[0])):
+            writer.writerow([strip_accents(title), pos, mean, title])
+
+
 def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
     rows = load_existing()
     print(f"{len(rows)} existing idioms")
 
@@ -91,18 +104,8 @@ def main():
         time.sleep(0.5)
     print(f"added {added} new idioms")
 
-    by_letter = defaultdict(list)
-    for key, row in rows.items():
-        letter = next((c for c in key if c.isalpha()), "#")
-        by_letter[letter].append(row)
-
-    for letter, letter_rows in by_letter.items():
-        letter_rows.sort(key=lambda r: fold(r[0]))
-        path = os.path.join(OUT_DIR, f"{letter}_idioms.csv")
-        with open(path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(["Title", "Part of Speech", "Meaning"])
-            writer.writerows(letter_rows)
+    save_rows(rows.values())
+    print(f"saved {len(rows)} idioms to {OUT_PATH}")
 
 
 if __name__ == "__main__":

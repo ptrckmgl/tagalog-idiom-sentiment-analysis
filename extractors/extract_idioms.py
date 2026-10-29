@@ -3,7 +3,8 @@ Find Filipino idioms in a dataset (CulturaX streamed from Hugging Face, or a
 local copy of NewsPH) and save every SENTENCE that contains one, together with
 HOW it matched.
 
-This replaces extractors/culturax_extraction.py and extractors/news_ph_extraction.py.
+It replaced the older exact-only extractors (culturax_extraction.py and
+news_ph_extraction.py, now only in git history).
 Instead of one exact Aho-Corasick pass, it tries four levels in order and
 records the first level that works for each idiom in each sentence:
 
@@ -42,6 +43,7 @@ from collections import Counter, defaultdict
 from functools import lru_cache
 
 from datasets import load_dataset
+from tqdm import tqdm
 
 
 # ============================================================
@@ -50,7 +52,7 @@ from datasets import load_dataset
 
 SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-IDIOMS_PATH = os.path.join(SCRIPT_DIR, "idioms_list")
+IDIOMS_PATH = os.path.join(SCRIPT_DIR, "data", "leksyon_idioms", "leksyon_idioms.csv")
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "extracted_idioms")
 
 # Local copy of the NewsPH dataset (used with --source newsph).
@@ -78,7 +80,9 @@ FILLERS = {
 
 LINKERS = {"na", "ng"}
 
-PROGRESS_EVERY = 100_000
+# At the "root" level a root shorter than this is not used (the word is kept
+# as it is). It stops over-cut roots like "kamay" -> "may" from matching.
+MIN_STEM = 4
 
 # A sentence ends at . ! ? followed by whitespace, or at a line break.
 SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+|\n+")
@@ -112,9 +116,11 @@ def make_stemmer():
     @lru_cache(maxsize=2_000_000)
     def stem(word):
         try:
-            return str(get_stem(word))
+            root = str(get_stem(word))
         except Exception:
             return word
+
+        return root if len(root) >= MIN_STEM else word
 
     return stem
 
@@ -368,6 +374,10 @@ def scan_dataset(dataset, matcher, source, limit_rows):
     seen = set()
     count = 0
 
+    # streamed datasets (CulturaX) have no length, so the bar shows a count only
+    total = limit_rows or (len(dataset) if hasattr(dataset, "__len__") else None)
+    progress = tqdm(total=total, unit=" rows", smoothing=0.05)
+
     for count, row in enumerate(dataset, start=1):
         doc_id = f"{source}-{count}"
 
@@ -381,12 +391,15 @@ def scan_dataset(dataset, matcher, source, limit_rows):
                 seen.add(key)
                 rows.append({"source": source, "doc_id": doc_id, "text": sentence, **match})
 
-        if count % PROGRESS_EVERY == 0:
-            print(f"  {count:,} rows scanned, {len(rows):,} matches")
+        progress.update(1)
+
+        if count % 1000 == 0:
+            progress.set_postfix(matches=f"{len(rows):,}")
 
         if limit_rows and count >= limit_rows:
             break
 
+    progress.close()
     print(f"  {count:,} rows scanned in total")
     return rows
 

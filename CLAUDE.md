@@ -22,17 +22,20 @@ Run everything from the repo root with `.venv/Scripts/python.exe` (Windows).
 
 | Step | File | Output |
 |---|---|---|
-| 1. Scrape idioms | `scrapers/scraper_sitemap.py` | `idioms_list/<letter>_idioms.csv` (16 files, 939 idioms; columns `Title`, `Part of Speech`, `Meaning`) |
-| 2. Extract sentences (old) | `extractors/culturax_extraction.py`, `extractors/news_ph_extraction.py` | `culturax_idioms/`, `news_ph_idioms/` (columns `idioms`, `text`; utf-8-sig) |
-| 2. Extract sentences (new) | `extractors/extract_idioms.py` **(untested on real data)** | `extracted_idioms/<source>_matches.csv` |
+| 1. Scrape idioms | `scrapers/scraper_sitemap.py`, `scrapers/scraper_wiktionary.py` | `data/leksyon_idioms/leksyon_idioms.csv` (939 idioms; `Title` without accents, plus `Accented_Title`), `data/wiktionary_idioms/wiktionary_idioms.csv` (392) |
+| 1b. Combine lists | `processing/combine_idiom_lists.py` | `data/combined_idioms/combined_idioms.csv` (1,146 idioms; `Source` = leksyon / wiktionary / both) |
+| 1c. Review the list | Pat, by hand | `data/combined_idioms/idiom_review.csv` (flags, earlier cleanup, variant groups, `your_decision`) |
+| 2. Extract sentences | `extractors/extract_idioms.py` (run on NewsPH 200k rows; `--stem` uses `MIN_STEM = 4`) | `extracted_idioms/<source>_matches.csv` |
 | 3. Estimate match precision | `extractors/sample_match_types.py` **(untested on real data)** | `review.csv`, then a precision table |
-| 4. Merge and de-duplicate | `check_duplicates.py` (`--merge`, `--remove`) | `merged_idioms/merged.csv` |
-| 5. Split | `split_dataset.py` (scikit-learn, seed 67) | `dataset/train.csv`, `val.csv`, `test.csv` |
-| on hold | `bio_tagging.py` | none |
+| 4. Merge and de-duplicate | `processing/check_duplicates.py` | still written for the deleted old outputs |
+| 5. Split | `processing/split_dataset.py` (scikit-learn, seed 67) | still written for the deleted `merged.csv` |
+| on hold | `processing/bio_tagging.py` | none |
+
+On 2026-10-29 the old exact-only extractors, their outputs (`culturax_idioms/`, `news_ph_idioms/`), the old sentence split (`dataset/`), `merged_idioms/`, `idioms_list/` and the earlier `idioms_clean.csv` were deleted; they remain in git history.
 
 Data sources: **CulturaX** (config `tl`, streamed from Hugging Face, gated: accept terms and run `huggingface-cli login`) and a local copy of **NewsPH** (`C:\Users\patri\Downloads\newsph\newsph`, column `text`).
 
-Steps 4 and 5 were written for the OLD columns (`idioms`, `text`). The new extractor writes one row per match with different columns, so both need updating (see Open work).
+Steps 4 and 5 were written for the OLD columns (`idioms`, `text`) and old folders. The new extractor writes one row per match with different columns, so both need rewriting (see Open work).
 
 ## State of the old data (before re-extraction)
 
